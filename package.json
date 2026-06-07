@@ -37,7 +37,7 @@
         "eslint": ">=9.0.0"
     },
     "dependencies": {
-        "mso-conditional-parser": "file:../mso-conditional-parser"
+        "mso-conditional-parser": "^1.0.0"
     },
     "scripts": {
         "test": "node --test tests/rules.test.mjs",
