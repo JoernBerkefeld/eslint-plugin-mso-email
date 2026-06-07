@@ -11,13 +11,18 @@
  *   Closers: <![endif]-->  <!--<![endif]-->  <![endif]>
  */
 
+import {
+    MSO_COMMENT_PATTERN,
+    DOCUMENT_VIRTUAL_BASENAME,
+    MSO_VIRTUAL_BASENAME,
+} from './lib/mso-comment-pattern.js';
+
 /**
  * Regex that matches any MSO comment (opener or closer) on a single line.
  * Named capture groups:
  *   comment — the full raw comment string
  */
-const MSO_COMMENT_RE =
-    /<!--\[if\s[^\]]*\]>(?:<!--)?|<!\[if\s[^\]]*\]>|(?:<!--)?<!\[endif\]-->|<!\[endif\]>/g;
+const MSO_COMMENT_RE = MSO_COMMENT_PATTERN;
 
 /**
  * Counts newline characters before a given position in text.
@@ -42,10 +47,10 @@ function countNewlinesBefore(text, pos) {
  * virtual `.mso` file, preserving line offsets.
  *
  * @param {string} text - Full source text of the HTML file.
- * @param {string} filename - Original filename.
+ * @param {string} _filename - Original filename (reserved for future path-aware virtual names).
  * @returns {{text: string, filename: string}[]} Array of virtual file objects.
  */
-export function preprocess(text, filename) {
+export function preprocess(text, _filename) {
     const lines = [];
     let maxLine = 0;
 
@@ -60,17 +65,20 @@ export function preprocess(text, filename) {
     }
 
     if (lines.length === 0) {
-        return [text];
+        return [{ text, filename: DOCUMENT_VIRTUAL_BASENAME }];
     }
 
     // Build a single virtual file: place each comment at its original line number
     // using padding newlines so that column/line errors map back correctly.
     const rows = Array.from({ length: maxLine + 1 }, () => '');
     for (const entry of lines) {
-        rows[entry.line] = entry.text;
+        rows[entry.line] = rows[entry.line] ? `${rows[entry.line]}${entry.text}` : entry.text;
     }
 
-    return [{ text: rows.join('\n'), filename: `${filename}/mso-comments.mso` }];
+    return [
+        { text: rows.join('\n'), filename: MSO_VIRTUAL_BASENAME },
+        { text, filename: DOCUMENT_VIRTUAL_BASENAME },
+    ];
 }
 
 /**
@@ -83,4 +91,4 @@ export function postprocess(messages) {
     return messages.flat();
 }
 
-export default { preprocess, postprocess, supportsAutofix: false };
+export default { preprocess, postprocess, supportsAutofix: true };
