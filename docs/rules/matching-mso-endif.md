@@ -1,22 +1,20 @@
-# `mso-conditionals/matching-mso-endif`
+# `mso/matching-mso-endif`
 
 **Category:** problem  
 **Default severity:** `error`  
 **Fixable:** no
 
-Ensures every MSO conditional comment opener is closed by a matching `[endif]`, and every `[endif]` closer has a corresponding opener. Unmatched pairs cause Outlook to misinterpret layout and are a common source of rendering bugs.
+Ensures every MSO conditional comment opener is closed by a matching `[endif]`, and every `[endif]` closer has a corresponding opener. Unmatched pairs cause Outlook to misinterpret layout.
+
+Inserting or deleting `[endif]` markers without author intent is unsafe, so this rule is **report only**.
 
 ## What counts as an opener
-
-Any of the following patterns is treated as an opener:
 
 - `<!--[if mso]>` — standard conditional comment
 - `<!--[if gte mso 14]><!--` — downlevel-hidden variant
 - `<![if mso]>` — non-standard short form
 
 ## What counts as a closer
-
-Any of the following patterns is treated as a closer:
 
 - `<![endif]-->` — standard close
 - `<!--<![endif]-->` — downlevel-hidden close
@@ -32,11 +30,11 @@ Any of the following patterns is treated as a closer:
 <![endif]-->
 
 <!--[if gte mso 14]><!--
-  <p>Non-Outlook, hidden from Outlook 2010+</p>
+  <p>Hidden from Outlook 2010+</p>
 <!--<![endif]-->
 ```
 
-Nested pairs are also valid:
+Nested pairs:
 
 ```html
 <!--[if mso]>
@@ -48,44 +46,33 @@ Nested pairs are also valid:
 
 ### Incorrect
 
-Missing `[endif]`:
+Missing closer:
 
 ```html
 <!--[if mso]>
   <p>Outlook content</p>
-<!-- ✗ missing <![endif]--> -->
 ```
 
-Closer without an opener:
+Closer without opener:
 
 ```html
 <p>Regular content</p>
-<![endif]-->   <!-- ✗ no matching opener above -->
-```
-
-Mismatched nesting:
-
-```html
-<!--[if mso]>
-  <!--[if gte mso 14]>
-<![endif]-->  <!-- ✗ closes the outer block while inner is still open -->
+<![endif]-->
 ```
 
 ## When to disable
-
-Disable per-file if you have template fragments that intentionally contain only half of a pair:
 
 ```js
 // eslint.config.js
 {
   rules: {
-    'mso-conditionals/matching-mso-endif': 'warn',
+    'mso/matching-mso-endif': 'warn',
   },
 }
 ```
 
-Or disable for a specific file with an `eslint-disable` comment in the HTML (requires the processor to be active):
+Per-file disable in HTML (requires the processor):
 
 ```html
-<!-- eslint-disable mso-conditionals/matching-mso-endif -->
+<!-- eslint-disable mso/matching-mso-endif -->
 ```

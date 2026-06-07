@@ -1,39 +1,49 @@
-# `mso-conditionals/valid-mso-condition`
+# `mso/valid-mso-condition`
 
 **Category:** problem  
 **Default severity:** `error`  
-**Fixable:** no
+**Fixable:** partial
 
-Validates that every MSO conditional comment opener uses correct syntax:
+Validates MSO conditional comment openers:
 
 - keyword is `mso` (not `mos` or similar typos)
 - comparison operator is one of `gte`, `gt`, `lte`, `lt`, `eq`
-- version number is a known Outlook version (9, 10, 11, 12, 14, 15, 16)
+- version number is a known Outlook MSO version (9, 10, 11, 12, 14, 15, 16)
 - an operator is always paired with a version number
+- legacy `IE` / `!IE` conditions are accepted
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `fixTypos` | `boolean` | `true` | Apply auto-fix when the parser returns a deterministic replacement for the condition substring. |
+
+## What the fix changes
+
+When `fixTypos` is enabled and the parser supplies a replacement (for example `mos` → `mso`), only the **condition text inside the opener** is rewritten. Invalid version numbers, unknown operators, and ambiguous compound conditions are **not** auto-fixed.
 
 ## Examples
 
 ### Correct
 
 ```html
-<!--[if mso]>      <p>All Outlook versions</p>  <![endif]-->
-<!--[if gte mso 14]>  <p>Outlook 2010+</p>      <![endif]-->
-<!--[if mso 16]>   <p>Outlook 2016/2019/365</p> <![endif]-->
-<!--[if !mso]><!--><p>Non-Outlook clients</p>   <!--<![endif]-->
-<![if !mso]>       <p>Non-Outlook (non-standard)</p> <![endif]>
+<!--[if mso]><p>All Outlook versions</p><![endif]-->
+<!--[if gte mso 14]><p>Outlook 2010+</p><![endif]-->
+<!--[if mso 16]><p>Outlook 2016/2019/365</p><![endif]-->
+<!--[if IE]><p>Legacy IE targeting</p><![endif]-->
+<!--[if !mso]><!--><p>Non-Outlook clients</p><!--<![endif]-->
 ```
 
 ### Incorrect
 
 ```html
-<!--[if mos]>         <!-- ✗ typo: 'mos' should be 'mso' -->
-<!--[if newer mso 16]><!-- ✗ unknown operator 'newer' -->
-<!--[if gte mso 13]>  <!-- ✗ version 13 does not exist (jumps 12→14) -->
-<!--[if gte mso]>     <!-- ✗ operator 'gte' requires a version number -->
-<!--[if xyz]>         <!-- ✗ unrecognized condition -->
+<!--[if mos]>         <!-- typo: mos → mso (fixable when fixTypos is true) -->
+<!--[if newer mso 16]> <!-- unknown operator -->
+<!--[if gte mso 13]>  <!-- version 13 does not exist -->
+<!--[if gte mso]>     <!-- operator without version -->
 ```
 
-## Valid Outlook versions
+## Valid Outlook MSO versions
 
 | MSO version | Outlook product |
 |---|---|
@@ -47,25 +57,13 @@ Validates that every MSO conditional comment opener uses correct syntax:
 
 > There is no MSO version 13 — Outlook skips from 12 (2007) to 14 (2010).
 
-## Valid operators
-
-| Operator | Meaning |
-|---|---|
-| `gte` | greater than or equal |
-| `gt` | greater than |
-| `lte` | less than or equal |
-| `lt` | less than |
-| `eq` | equal |
-
 ## When to disable
-
-This rule can be disabled per-file if you intentionally use non-standard or proprietary MSO condition syntax not covered by the known set:
 
 ```js
 // eslint.config.js
 {
   rules: {
-    'mso-conditionals/valid-mso-condition': 'off',
+    'mso/valid-mso-condition': 'off',
   },
 }
 ```

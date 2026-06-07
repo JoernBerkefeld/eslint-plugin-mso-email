@@ -1,13 +1,13 @@
-# eslint-plugin-mso-conditionals
+# eslint-plugin-mso
 
-ESLint plugin for validating **MSO (Outlook) conditional comments** in HTML email.
+ESLint plugin for **Outlook/HTML email** markup: MSO conditional comments, Outlook CSS properties, VML namespaces, and layout table accessibility.
 
-Extracts `<!--[if mso]>` … `<![endif]-->` blocks from HTML files and lints them for valid syntax and matched pairs using a custom processor and AST parser.
+Extracts conditional comments into a virtual file for AST-based rules, and lints full HTML documents for MSO CSS, VML, and table semantics.
 
 ## Installation
 
 ```bash
-npm install eslint-plugin-mso-conditionals --save-dev
+npm install eslint-plugin-mso --save-dev
 ```
 
 Requires ESLint 9+ (flat config) and Node.js 18+.
@@ -16,18 +16,16 @@ Requires ESLint 9+ (flat config) and Node.js 18+.
 
 ```js
 // eslint.config.js
-import msoConditionals from 'eslint-plugin-mso-conditionals';
+import mso from 'eslint-plugin-mso';
 
-export default [
-  ...msoConditionals.configs.recommended,
-];
+export default [...mso.configs.recommended];
 ```
 
-This lints MSO conditional comments inside `**/*.html`, `**/*.amp`, and `**/*.ampscript` files.
+This lints `**/*.html`, `**/*.amp`, and `**/*.ampscript` files.
 
 ## VS Code Setup
 
-To see `eslint(mso-conditionals/...)` diagnostics inline in VS Code, the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) must be configured to validate HTML files:
+Configure the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to validate HTML:
 
 ```json
 {
@@ -35,53 +33,34 @@ To see `eslint(mso-conditionals/...)` diagnostics inline in VS Code, the [ESLint
 }
 ```
 
-The [MSO Conditional Comments](https://marketplace.visualstudio.com/items?itemName=joernberkefeld.mso-conditionals) VS Code extension provides the same diagnostics without requiring ESLint. Use this plugin when you want linting in CI or in editors other than VS Code.
+The [MSO Conditional Comments](https://marketplace.visualstudio.com/items?itemName=joernberkefeld.mso-conditionals) VS Code extension provides overlapping conditional-comment diagnostics without ESLint. Use this plugin for CI and editors with ESLint.
 
 ## Rules
 
-| Rule | Default | Description |
-|---|---|---|
-| [`mso-conditionals/valid-mso-condition`](docs/rules/valid-mso-condition.md) | `error` | Validate MSO condition syntax — correct keyword, operator, and version |
-| [`mso-conditionals/matching-mso-endif`](docs/rules/matching-mso-endif.md) | `error` | Ensure every opener has a matching `[endif]` and vice versa |
+| Rule | Default | Fixable | Description |
+|---|---|---|---|
+| `mso/valid-mso-condition` | error | yes (deterministic typos) | Validate MSO conditional opener syntax |
+| `mso/matching-mso-endif` | error | no | Match openers and `[endif]` closers |
+| `mso/matching-mso-endif-type` | warn | yes | Match closer variant to opener style |
+| `mso/no-unknown-mso-property` | warn | yes (typo hints) | Disallow unknown `mso-*` CSS properties |
+| `mso/vml-requires-namespace` | warn | yes | Require `xmlns:*` on `html` when using VML |
+| `mso/no-unknown-vml-tag` | warn | yes (typo hints) | Disallow unknown VML tag names |
+| `mso/no-unknown-vml-attribute` | warn | yes (typo hints) | Disallow unknown VML attributes |
+| `mso/table-presentation-role` | warn | yes | Require `role="presentation"` on layout tables |
 
-## Processor
+Rule details (options, fix behavior, examples): [`docs/rules/`](docs/rules/README.md).
 
-| Processor | Files | Purpose |
-|---|---|---|
-| `mso-conditionals/html` | `**/*.html`, `**/*.amp`, `**/*.ampscript` | Extracts MSO conditional comment strings for linting |
-
-The processor emits a virtual `.mso` file per source file containing one MSO comment per line, preserving line offsets so reported locations map back to the original file.
-
-## Config
-
-### `msoConditionals.configs.recommended`
-
-An array of two flat config objects:
-
-1. **Processor config** — registers `mso-conditionals/html` on HTML/AMP files.
-2. **Rules config** — applies `valid-mso-condition` and `matching-mso-endif` at `error` severity on the extracted `.mso` virtual files.
-
-Spread it in your config:
+## Migration from eslint-plugin-mso-conditionals
 
 ```js
-export default [
-  ...msoConditionals.configs.recommended,
-  // your other rules...
-];
+// Before
+import msoConditionals from 'eslint-plugin-mso-conditionals';
+
+// After
+import mso from 'eslint-plugin-mso';
 ```
 
-To adjust severity, override individual rules after spreading:
-
-```js
-export default [
-  ...msoConditionals.configs.recommended,
-  {
-    rules: {
-      'mso-conditionals/matching-mso-endif': 'warn',
-    },
-  },
-];
-```
+Replace rule IDs `mso-conditionals/…` with `mso/…`.
 
 ## License
 

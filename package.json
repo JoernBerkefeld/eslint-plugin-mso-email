@@ -1,7 +1,7 @@
 {
-    "name": "eslint-plugin-mso-conditionals",
+    "name": "eslint-plugin-mso",
     "version": "1.0.0",
-    "description": "ESLint plugin for validating MSO (Outlook) conditional comments in HTML email",
+    "description": "ESLint plugin for Outlook/HTML email markup — conditional comments, MSO CSS, VML, and layout tables",
     "type": "module",
     "main": "src/index.js",
     "exports": {
@@ -9,16 +9,17 @@
     },
     "files": [
         "src",
+        "docs",
         "LICENSE"
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/JoernBerkefeld/eslint-plugin-mso-conditionals.git"
+        "url": "git+https://github.com/JoernBerkefeld/eslint-plugin-mso.git"
     },
     "bugs": {
-        "url": "https://github.com/JoernBerkefeld/eslint-plugin-mso-conditionals/issues"
+        "url": "https://github.com/JoernBerkefeld/eslint-plugin-mso/issues"
     },
-    "homepage": "https://github.com/JoernBerkefeld/eslint-plugin-mso-conditionals#readme",
+    "homepage": "https://github.com/JoernBerkefeld/eslint-plugin-mso#readme",
     "author": "Joern Berkefeld",
     "license": "MIT",
     "keywords": [
@@ -28,7 +29,8 @@
         "outlook",
         "email",
         "conditional-comments",
-        "html-email"
+        "html-email",
+        "vml"
     ],
     "engines": {
         "node": ">=18.0.0"
@@ -37,10 +39,10 @@
         "eslint": ">=9.0.0"
     },
     "dependencies": {
-        "mso-conditional-parser": "^1.0.0"
+        "mso-conditional-parser": "file:../mso-conditional-parser"
     },
     "scripts": {
-        "test": "node --test tests/rules.test.mjs",
+        "test": "node --test tests/**/*.test.mjs",
         "lint": "eslint src tests",
         "lint:fix": "eslint --fix src tests",
         "prepare": "husky || true",

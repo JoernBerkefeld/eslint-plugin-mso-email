@@ -10,6 +10,7 @@
  */
 
 import { parseMsoComment, parseMsoEndComment } from 'mso-conditional-parser';
+import { MSO_COMMENT_PATTERN } from './lib/mso-comment-pattern.js';
 
 /**
  * Visitor keys for all node types in the MSO AST.
@@ -50,27 +51,33 @@ export function parse(text, _options) {
     const body = [];
 
     for (const [lineIndex, line] of lines.entries()) {
-        const raw = line.trim();
-        if (!raw) {
-            continue;
+        const lineStart = lineStarts[lineIndex] ?? text.length;
+        const commentPattern = new RegExp(MSO_COMMENT_PATTERN.source, MSO_COMMENT_PATTERN.flags);
+
+        let match;
+        let found = false;
+        while ((match = commentPattern.exec(line)) !== null) {
+            found = true;
+            const raw = match[0];
+            const start = lineStart + match.index;
+            const end = start + raw.length;
+            const parsed = parseMsoComment(raw) ?? parseMsoEndComment(raw);
+
+            body.push({
+                type: 'MsoComment',
+                raw,
+                parsed,
+                range: [start, end],
+                loc: {
+                    start: { line: lineIndex + 1, column: match.index },
+                    end: { line: lineIndex + 1, column: match.index + raw.length },
+                },
+            });
         }
 
-        const lineStart = lineStarts[lineIndex] ?? text.length;
-        const start = lineStart;
-        const end = lineStart + line.length;
-
-        const parsed = parseMsoComment(raw) ?? parseMsoEndComment(raw);
-
-        body.push({
-            type: 'MsoComment',
-            raw,
-            parsed,
-            range: [start, end],
-            loc: {
-                start: { line: lineIndex + 1, column: 0 },
-                end: { line: lineIndex + 1, column: line.length },
-            },
-        });
+        if (found) {
+            continue;
+        }
     }
 
     const programEnd = text.length;

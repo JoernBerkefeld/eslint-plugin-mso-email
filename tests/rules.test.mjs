@@ -5,24 +5,7 @@ import msoEslintParser, { visitorKeys } from '../src/mso-eslint-parser.js';
 import { preprocess, postprocess } from '../src/processor.js';
 import validMsoCondition from '../src/rules/valid-mso-condition.js';
 import matchingMsoEndif from '../src/rules/matching-mso-endif.js';
-
-// ── Helper ──────────────────────────────────────────────────────────────────
-
-/**
- * Simulates running the processor on HTML text, returning the virtual .mso
- * file text (or the original text when no MSO comments are found).
- *
- * @param {string} html - Raw HTML source.
- * @returns {string} Virtual .mso file content.
- */
-function extractMsoVirtualFile(html) {
-    const result = preprocess(html, 'test.html');
-    if (result.length === 1 && typeof result[0] === 'string') {
-        return result[0];
-    }
-
-    return result[0].text;
-}
+import { extractMsoVirtualFile } from './helpers/extract-files.js';
 
 const ruleTester = new RuleTester({
     languageOptions: { parser: msoEslintParser },
@@ -31,25 +14,24 @@ const ruleTester = new RuleTester({
 // ── processor ────────────────────────────────────────────────────────────────
 
 describe('processor — preprocess', () => {
-    it('returns original text when no MSO comments are present', () => {
+    it('returns a document virtual file when no MSO comments are present', () => {
         const result = preprocess('<div>Hello</div>', 'test.html');
         assert.equal(result.length, 1);
-        assert.equal(typeof result[0], 'string');
+        assert.equal(result[0].filename, 'document.msohtml');
     });
 
     it('extracts a downlevel-hidden opener', () => {
         const result = preprocess('<!--[if mso]>\n<p>test</p>\n<![endif]-->', 'test.html');
-        assert.equal(result.length, 1);
-        assert.ok(result[0].filename.endsWith('.mso'));
-        assert.ok(result[0].text.includes('<!--[if mso]>'));
-        assert.ok(result[0].text.includes('<![endif]-->'));
+        assert.equal(result.length, 2);
+        const msoFile = result.find((entry) => entry.filename.endsWith('.mso'));
+        assert.ok(msoFile.text.includes('<!--[if mso]>'));
+        assert.ok(msoFile.text.includes('<![endif]-->'));
     });
 
     it('preserves line offsets via newline padding', () => {
         const html = 'line1\nline2\n<!--[if mso]>';
         const result = preprocess(html, 'test.html');
-        // The MSO comment is on line 3 (index 2), so virtual file should have 2 newlines before it
-        const text = result[0].text;
+        const text = result.find((entry) => entry.filename.endsWith('.mso')).text;
         const lines = text.split('\n');
         assert.equal(lines[2], '<!--[if mso]>');
     });
@@ -57,7 +39,7 @@ describe('processor — preprocess', () => {
     it('extracts both opener and closer', () => {
         const html = '<!--[if mso]>\n<td></td>\n<![endif]-->';
         const result = preprocess(html, 'test.html');
-        const text = result[0].text;
+        const text = result.find((entry) => entry.filename.endsWith('.mso')).text;
         assert.ok(text.includes('<!--[if mso]>'));
         assert.ok(text.includes('<![endif]-->'));
     });
@@ -111,6 +93,7 @@ describe('valid-mso-condition rule', () => {
             {
                 code: extractMsoVirtualFile('<!--[if mos]>'),
                 errors: [{ messageId: 'invalidCondition' }],
+                output: extractMsoVirtualFile('<!--[if mso]>'),
             },
             {
                 code: extractMsoVirtualFile('<!--[if mso 13]>'),
@@ -187,8 +170,11 @@ describe('processor — additional coverage', () => {
         const html =
             '<!--[if mso]>\n<p>hello</p>\n<![endif]-->\n<p>other</p>\n<!--[if gte mso 16]>\n<p>x</p>\n<![endif]-->';
         const result = preprocess(html, 'test.html');
-        assert.equal(result[0].filename.endsWith('.mso'), true);
-        const text = result[0].text;
+        assert.equal(
+            result.find((entry) => entry.filename.endsWith('.mso')).filename.endsWith('.mso'),
+            true,
+        );
+        const text = result.find((entry) => entry.filename.endsWith('.mso')).text;
         assert.ok(text.includes('<!--[if mso]>'));
         assert.ok(text.includes('<!--[if gte mso 16]>'));
         // Both openers appear and the second is after the first
@@ -198,7 +184,7 @@ describe('processor — additional coverage', () => {
     it('extracts revealed opener <!--[if !mso]><!-- and preserves it', () => {
         const html = '<!--[if !mso]><!--\n<p>revealed</p>\n<!--<![endif]-->';
         const result = preprocess(html, 'test.html');
-        const text = result[0].text;
+        const text = result.find((entry) => entry.filename.endsWith('.mso')).text;
         assert.ok(text.includes('<!--[if !mso]><!--'));
         assert.ok(text.includes('<!--<![endif]-->'));
     });
@@ -206,6 +192,14 @@ describe('processor — additional coverage', () => {
     it('postprocess([]) returns an empty array without throwing', () => {
         const result = postprocess([]);
         assert.deepEqual(result, []);
+    });
+
+    it('keeps opener and closer on the same source line', () => {
+        const html = '<!--[if mso]><v:rect></v:rect><![endif]-->';
+        const result = preprocess(html, 'test.html');
+        const text = result.find((entry) => entry.filename === 'mso-comments.mso').text.trim();
+        assert.ok(text.includes('<!--[if mso]>'));
+        assert.ok(text.includes('<![endif]-->'));
     });
 });
 
@@ -225,6 +219,11 @@ describe('mso-eslint-parser — additional coverage', () => {
         assert.ok(closerNode, 'closer node should exist in the AST');
         assert.equal(closerNode.parsed.isClosing, true);
         assert.equal(closerNode.parsed.type, 'downlevel-hidden-end');
+    });
+
+    it('parses multiple comments on one virtual line', () => {
+        const ast = msoEslintParser.parse('<!--[if mso]><![endif]-->', {});
+        assert.equal(ast.body.length, 2);
     });
 });
 
