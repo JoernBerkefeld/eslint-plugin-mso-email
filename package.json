@@ -39,7 +39,7 @@
         "eslint": ">=9.0.0"
     },
     "dependencies": {
-        "mso-conditional-parser": "file:../mso-conditional-parser"
+        "mso-conditional-parser": "^1.1.0"
     },
     "scripts": {
         "test": "node --test tests/**/*.test.mjs",
@@ -65,8 +65,5 @@
         "*.{js,mjs,cjs}": [
             "eslint --fix"
         ]
-    },
-    "volta": {
-        "node": "22.15.0"
     }
 }
