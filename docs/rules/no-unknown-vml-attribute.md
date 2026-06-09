@@ -2,7 +2,7 @@
 
 **Category:** problem  
 **Default severity:** `warn`  
-**Fixable:** yes
+**Fixable:** partial (typo hints)
 
 On **known** VML tags, validates attribute names against the curated allowlist. Standard HTML attributes (`class`, `id`, `style`, …), `data-*`, and `aria-*` are ignored.
 

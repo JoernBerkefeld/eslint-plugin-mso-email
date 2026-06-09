@@ -1,5 +1,5 @@
 /**
- * eslint-plugin-mso
+ * eslint-plugin-mso-email
  *
  * ESLint plugin for Outlook/HTML email markup: conditional comments, MSO CSS,
  * VML namespaces, and layout table accessibility.
@@ -20,7 +20,7 @@ import vmlRequiresNamespace from './rules/vml-requires-namespace.js';
 
 const plugin = {
     meta: {
-        name: 'eslint-plugin-mso',
+        name: 'eslint-plugin-mso-email',
         version: '1.0.0',
     },
 

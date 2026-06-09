@@ -1,4 +1,4 @@
-# eslint-plugin-mso
+# eslint-plugin-mso-email
 
 ESLint plugin for **Outlook/HTML email** markup: MSO conditional comments, Outlook CSS properties, VML namespaces, and layout table accessibility.
 
@@ -7,7 +7,7 @@ Extracts conditional comments into a virtual file for AST-based rules, and lints
 ## Installation
 
 ```bash
-npm install eslint-plugin-mso --save-dev
+npm install eslint-plugin-mso-email --save-dev
 ```
 
 Requires ESLint 9+ (flat config) and Node.js 18+.
@@ -16,7 +16,7 @@ Requires ESLint 9+ (flat config) and Node.js 18+.
 
 ```js
 // eslint.config.js
-import mso from 'eslint-plugin-mso';
+import mso from 'eslint-plugin-mso-email';
 
 export default [...mso.configs.recommended];
 ```
@@ -37,18 +37,27 @@ The [MSO Conditional Comments](https://marketplace.visualstudio.com/items?itemNa
 
 ## Rules
 
+All rules use the `mso/` plugin prefix.
+
 | Rule | Default | Fixable | Description |
 |---|---|---|---|
-| `mso/valid-mso-condition` | error | yes (deterministic typos) | Validate MSO conditional opener syntax |
-| `mso/matching-mso-endif` | error | no | Match openers and `[endif]` closers |
-| `mso/matching-mso-endif-type` | warn | yes | Match closer variant to opener style |
-| `mso/no-unknown-mso-property` | warn | yes (typo hints) | Disallow unknown `mso-*` CSS properties |
-| `mso/vml-requires-namespace` | warn | yes | Require `xmlns:*` on `html` when using VML |
-| `mso/no-unknown-vml-tag` | warn | yes (typo hints) | Disallow unknown VML tag names |
-| `mso/no-unknown-vml-attribute` | warn | yes (typo hints) | Disallow unknown VML attributes |
-| `mso/table-presentation-role` | warn | yes | Require `role="presentation"` on layout tables |
+| [`mso/valid-mso-condition`](docs/rules/valid-mso-condition.md) | error | partial (deterministic typos) | Validate MSO conditional opener syntax |
+| [`mso/matching-mso-endif`](docs/rules/matching-mso-endif.md) | error | no | Match openers and `[endif]` closers |
+| [`mso/matching-mso-endif-type`](docs/rules/matching-mso-endif-type.md) | warn | yes | Match closer variant to opener style |
+| [`mso/no-unknown-mso-property`](docs/rules/no-unknown-mso-property.md) | warn | partial (typo hints) | Disallow unknown `mso-*` CSS properties |
+| [`mso/vml-requires-namespace`](docs/rules/vml-requires-namespace.md) | warn | yes | Require `xmlns:*` on `html` when using VML |
+| [`mso/no-unknown-vml-tag`](docs/rules/no-unknown-vml-tag.md) | warn | yes | Disallow unknown VML tag names |
+| [`mso/no-unknown-vml-attribute`](docs/rules/no-unknown-vml-attribute.md) | warn | partial (typo hints) | Disallow unknown VML attributes |
+| [`mso/table-presentation-role`](docs/rules/table-presentation-role.md) | warn | yes | Require `role="presentation"` on layout tables |
 
-Rule details (options, fix behavior, examples): [`docs/rules/`](docs/rules/README.md).
+**Fixable legend**
+
+| Value | Meaning |
+|---|---|
+| **yes** | ESLint can auto-fix every reported violation for that rule (with default options). |
+| **partial (deterministic typos)** | Auto-fix only when the parser returns a single deterministic replacement for the condition substring (for example `mos` → `mso`). Invalid operators, unknown versions, and ambiguous conditions are reported without a fix. |
+| **partial (typo hints)** | Auto-fix only when the property, tag, or attribute name has a close allowlist match within edit distance. Unknown names with no hint are still reported, but not auto-fixed. |
+| **no** | Report only — inserting or removing structural comment markers is unsafe. |
 
 ## Migration from eslint-plugin-mso-conditionals
 
@@ -57,7 +66,7 @@ Rule details (options, fix behavior, examples): [`docs/rules/`](docs/rules/READM
 import msoConditionals from 'eslint-plugin-mso-conditionals';
 
 // After
-import mso from 'eslint-plugin-mso';
+import mso from 'eslint-plugin-mso-email';
 ```
 
 Replace rule IDs `mso-conditionals/…` with `mso/…`.

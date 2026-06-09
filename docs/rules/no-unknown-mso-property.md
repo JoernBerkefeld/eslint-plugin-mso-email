@@ -2,7 +2,7 @@
 
 **Category:** problem  
 **Default severity:** `warn`  
-**Fixable:** yes
+**Fixable:** partial (typo hints)
 
 Flags `mso-*` CSS property names in inline `style` attributes (and anywhere else they appear as declaration names) that are not in the curated Outlook property allowlist.
 
