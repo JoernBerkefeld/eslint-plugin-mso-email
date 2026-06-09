@@ -2,7 +2,7 @@
 
 **Category:** problem  
 **Default severity:** `error`  
-**Fixable:** partial
+**Fixable:** partial (deterministic typos)
 
 Validates MSO conditional comment openers:
 

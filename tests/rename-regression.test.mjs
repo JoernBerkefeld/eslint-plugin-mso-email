@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import plugin from '../src/index.js';
 
 describe('rename regression', () => {
-    it('registers eslint-plugin-mso metadata', () => {
-        assert.equal(plugin.meta.name, 'eslint-plugin-mso');
+    it('registers eslint-plugin-mso-email metadata', () => {
+        assert.equal(plugin.meta.name, 'eslint-plugin-mso-email');
     });
 
     it('exposes rules under the mso namespace in recommended config', () => {
