@@ -58,7 +58,7 @@ describe('mso-eslint-parser', () => {
         const text = extractMsoVirtualFile('<!--[if mso]>\n<p></p>\n<![endif]-->');
         const ast = msoEslintParser.parse(text, {});
         assert.equal(ast.type, 'Program');
-        assert.ok(ast.body.length >= 1);
+        assert.ok(ast.body.length > 0);
         assert.equal(ast.body[0].type, 'MsoComment');
     });
 
