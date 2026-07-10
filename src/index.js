@@ -21,7 +21,7 @@ import vmlRequiresNamespace from './rules/vml-requires-namespace.js';
 const plugin = {
     meta: {
         name: 'eslint-plugin-mso-email',
-        version: '1.0.1',
+        version: '2.0.0',
     },
 
     rules: {
