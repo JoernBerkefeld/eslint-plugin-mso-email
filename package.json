@@ -1,11 +1,15 @@
 {
     "name": "eslint-plugin-mso-email",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "ESLint plugin for Outlook/HTML email markup — conditional comments, MSO CSS, VML, and layout tables",
     "type": "module",
     "main": "src/index.js",
     "exports": {
-        ".": "./src/index.js"
+        ".": "./src/index.js",
+        "./processor": "./src/processor.js",
+        "./mso-parser": "./src/mso-eslint-parser.js",
+        "./html-parser": "./src/html-eslint-parser.js",
+        "./comment-pattern": "./src/lib/mso-comment-pattern.js"
     },
     "files": [
         "src",
