@@ -39,8 +39,8 @@ export default {
     create(context) {
         const options = context.options[0] ?? {};
         const maxDistance = options.maxDistance ?? 3;
-        const suggestTypos = options.suggestTypos !== false;
-        const fixTypos = options.fixTypos !== false && suggestTypos;
+        const isSuggestTypos = options.suggestTypos !== false;
+        const isFixTypos = options.fixTypos !== false && isSuggestTypos;
 
         return {
             Program() {
@@ -54,7 +54,7 @@ export default {
                     }
 
                     const hint =
-                        suggestTypos &&
+                        isSuggestTypos &&
                         closestAllowlistMatch(name, MSO_CSS_PROPERTIES, maxDistance);
                     const nameStart = index + match[0].indexOf(name);
                     const nameEnd = nameStart + name.length;
@@ -67,7 +67,7 @@ export default {
                         messageId: hint ? 'unknownPropertyHint' : 'unknownProperty',
                         data: { name, hint: hint ?? '' },
                         fix:
-                            hint && fixTypos
+                            hint && isFixTypos
                                 ? (fixer) => replaceRange(fixer, nameStart, nameEnd, hint)
                                 : null,
                     });

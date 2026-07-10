@@ -38,7 +38,7 @@ export default {
     create(context) {
         const options = context.options[0] ?? {};
         const maxDistance = options.maxDistance ?? 2;
-        const fixTypos = options.fixTypos !== false;
+        const isFixTypos = options.fixTypos !== false;
 
         return {
             Program() {
@@ -77,7 +77,7 @@ export default {
                                 messageId: hint ? 'unknownAttributeHint' : 'unknownAttribute',
                                 data: { name: attributeName, tag: tagName, hint: hint ?? '' },
                                 fix:
-                                    hint && fixTypos
+                                    hint && isFixTypos
                                         ? (fixer) => replaceRange(fixer, nameStart, nameEnd, hint)
                                         : null,
                             });

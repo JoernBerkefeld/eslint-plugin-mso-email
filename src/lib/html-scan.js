@@ -50,16 +50,16 @@ export function editDistance(left, right) {
 
     const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
 
-    for (let i = 1; i <= left.length; i++) {
+    for (let index = 1; index <= left.length; index++) {
         let diagonal = previous[0];
-        previous[0] = i;
+        previous[0] = index;
 
-        for (let j = 1; j <= right.length; j++) {
-            const saved = previous[j];
-            const substitutionCost = left[i - 1] === right[j - 1] ? 0 : 1;
-            previous[j] = Math.min(
-                previous[j] + 1,
-                previous[j - 1] + 1,
+        for (let index_ = 1; index_ <= right.length; index_++) {
+            const saved = previous[index_];
+            const substitutionCost = left[index - 1] === right[index_ - 1] ? 0 : 1;
+            previous[index_] = Math.min(
+                previous[index_] + 1,
+                previous[index_ - 1] + 1,
                 diagonal + substitutionCost,
             );
             diagonal = saved;
@@ -116,27 +116,29 @@ export function readXmlNamespaces(attributeText) {
  * @param {string} name - Attribute name.
  * @returns {boolean} True when the attribute should not be validated as VML-specific.
  */
+const GENERIC_HTML_ATTRIBUTES = new Set([
+    'id',
+    'class',
+    'style',
+    'title',
+    'lang',
+    'dir',
+    'hidden',
+    'tabindex',
+    'role',
+    'alt',
+    'src',
+    'href',
+    'target',
+    'rel',
+    'name',
+    'value',
+    'type',
+]);
+
 export function isGenericHtmlAttribute(name) {
     const lower = name.toLowerCase();
-    if (
-        lower === 'id' ||
-        lower === 'class' ||
-        lower === 'style' ||
-        lower === 'title' ||
-        lower === 'lang' ||
-        lower === 'dir' ||
-        lower === 'hidden' ||
-        lower === 'tabindex' ||
-        lower === 'role' ||
-        lower === 'alt' ||
-        lower === 'src' ||
-        lower === 'href' ||
-        lower === 'target' ||
-        lower === 'rel' ||
-        lower === 'name' ||
-        lower === 'value' ||
-        lower === 'type'
-    ) {
+    if (GENERIC_HTML_ATTRIBUTES.has(lower)) {
         return true;
     }
 

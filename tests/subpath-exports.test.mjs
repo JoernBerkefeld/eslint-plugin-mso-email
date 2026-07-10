@@ -6,31 +6,31 @@ import assert from 'node:assert/strict';
 
 describe('package subpath exports', () => {
     it('./processor exposes preprocess/postprocess', async () => {
-        const mod = await import('eslint-plugin-mso-email/processor');
-        assert.equal(typeof mod.preprocess, 'function');
-        assert.equal(typeof mod.postprocess, 'function');
-        assert.equal(typeof mod.default.preprocess, 'function');
-        assert.equal(typeof mod.default.postprocess, 'function');
+        const module_ = await import('eslint-plugin-mso-email/processor');
+        assert.equal(typeof module_.preprocess, 'function');
+        assert.equal(typeof module_.postprocess, 'function');
+        assert.equal(typeof module_.default.preprocess, 'function');
+        assert.equal(typeof module_.default.postprocess, 'function');
     });
 
     it('./mso-parser exposes parse and visitorKeys', async () => {
-        const mod = await import('eslint-plugin-mso-email/mso-parser');
-        assert.equal(typeof mod.parse, 'function');
-        assert.equal(typeof mod.visitorKeys, 'object');
-        assert.equal(typeof mod.default.parse, 'function');
+        const module_ = await import('eslint-plugin-mso-email/mso-parser');
+        assert.equal(typeof module_.parse, 'function');
+        assert.equal(typeof module_.visitorKeys, 'object');
+        assert.equal(typeof module_.default.parse, 'function');
     });
 
     it('./html-parser exposes parse and visitorKeys', async () => {
-        const mod = await import('eslint-plugin-mso-email/html-parser');
-        assert.equal(typeof mod.parse, 'function');
-        assert.equal(typeof mod.visitorKeys, 'object');
-        assert.equal(typeof mod.default.parse, 'function');
+        const module_ = await import('eslint-plugin-mso-email/html-parser');
+        assert.equal(typeof module_.parse, 'function');
+        assert.equal(typeof module_.visitorKeys, 'object');
+        assert.equal(typeof module_.default.parse, 'function');
     });
 
     it('./comment-pattern exposes the pattern and virtual basenames', async () => {
-        const mod = await import('eslint-plugin-mso-email/comment-pattern');
-        assert.ok(mod.MSO_COMMENT_PATTERN instanceof RegExp);
-        assert.equal(typeof mod.MSO_VIRTUAL_BASENAME, 'string');
-        assert.equal(typeof mod.DOCUMENT_VIRTUAL_BASENAME, 'string');
+        const module_ = await import('eslint-plugin-mso-email/comment-pattern');
+        assert.ok(module_.MSO_COMMENT_PATTERN instanceof RegExp);
+        assert.equal(typeof module_.MSO_VIRTUAL_BASENAME, 'string');
+        assert.equal(typeof module_.DOCUMENT_VIRTUAL_BASENAME, 'string');
     });
 });

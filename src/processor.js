@@ -72,7 +72,7 @@ export function preprocess(text, _filename) {
     // using padding newlines so that column/line errors map back correctly.
     const rows = Array.from({ length: maxLine + 1 }, () => '');
     for (const entry of lines) {
-        rows[entry.line] = rows[entry.line] ? `${rows[entry.line]}${entry.text}` : entry.text;
+        rows[entry.line] += entry.text;
     }
 
     return [

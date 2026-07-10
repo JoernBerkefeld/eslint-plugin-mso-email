@@ -55,9 +55,7 @@ export function parse(text, _options) {
         const commentPattern = new RegExp(MSO_COMMENT_PATTERN.source, MSO_COMMENT_PATTERN.flags);
 
         let match;
-        let found = false;
         while ((match = commentPattern.exec(line)) !== null) {
-            found = true;
             const raw = match[0];
             const start = lineStart + match.index;
             const end = start + raw.length;
@@ -73,10 +71,6 @@ export function parse(text, _options) {
                     end: { line: lineIndex + 1, column: match.index + raw.length },
                 },
             });
-        }
-
-        if (found) {
-            continue;
         }
     }
 
