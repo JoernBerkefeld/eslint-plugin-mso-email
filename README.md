@@ -18,22 +18,10 @@ Requires ESLint 9+ (flat config) and Node.js 18+.
 // eslint.config.js
 import mso from 'eslint-plugin-mso-email';
 
-export default [...mso.configs.recommended];
+export default [mso.configs.recommended];
 ```
 
 This lints `**/*.html`, `**/*.amp`, and `**/*.ampscript` files.
-
-## VS Code Setup
-
-Configure the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to validate HTML:
-
-```json
-{
-  "eslint.validate": ["html", "javascript"]
-}
-```
-
-The [MSO Conditional Comments](https://marketplace.visualstudio.com/items?itemName=joernberkefeld.mso-conditionals) VS Code extension provides overlapping conditional-comment diagnostics without ESLint. Use this plugin for CI and editors with ESLint.
 
 ## Rules
 
@@ -58,18 +46,6 @@ All rules use the `mso/` plugin prefix.
 | **partial (deterministic typos)** | Auto-fix only when the parser returns a single deterministic replacement for the condition substring (for example `mos` → `mso`). Invalid operators, unknown versions, and ambiguous conditions are reported without a fix. |
 | **partial (typo hints)** | Auto-fix only when the property, tag, or attribute name has a close allowlist match within edit distance. Unknown names with no hint are still reported, but not auto-fixed. |
 | **no** | Report only — inserting or removing structural comment markers is unsafe. |
-
-## Migration from eslint-plugin-mso-conditionals
-
-```js
-// Before
-import msoConditionals from 'eslint-plugin-mso-conditionals';
-
-// After
-import mso from 'eslint-plugin-mso-email';
-```
-
-Replace rule IDs `mso-conditionals/…` with `mso/…`.
 
 ## License
 
