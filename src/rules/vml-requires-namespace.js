@@ -49,7 +49,7 @@ export default {
                         continue;
                     }
 
-                    const prefix = tagName.split(':')[0]?.toLowerCase();
+                    const prefix = tagName.split(':', 1)[0]?.toLowerCase();
                     if (VML_NAMESPACE_PREFIXES.has(prefix)) {
                         usedPrefixes.add(prefix);
                     }

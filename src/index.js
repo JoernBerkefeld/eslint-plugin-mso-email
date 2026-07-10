@@ -54,40 +54,38 @@ const virtualDocumentFiles = [
     `**/*.ampscript/*_${DOCUMENT_VIRTUAL_BASENAME}`,
 ];
 
-Object.assign(plugin.configs, {
-    recommended: [
-        {
-            name: 'mso/html-processor',
-            plugins: { mso: plugin },
-            files: ['**/*.html', '**/*.amp', '**/*.ampscript'],
-            ignores: [...virtualMsoFiles, ...virtualDocumentFiles],
-            processor: 'mso/html',
+plugin.configs.recommended = [
+    {
+        name: 'mso/html-processor',
+        plugins: { mso: plugin },
+        files: ['**/*.html', '**/*.amp', '**/*.ampscript'],
+        ignores: [...virtualMsoFiles, ...virtualDocumentFiles],
+        processor: 'mso/html',
+    },
+    {
+        name: 'mso/conditional-rules',
+        plugins: { mso: plugin },
+        files: virtualMsoFiles,
+        languageOptions: { parser: msoEslintParser },
+        rules: {
+            'mso/valid-mso-condition': 'error',
+            'mso/matching-mso-endif': 'error',
+            'mso/matching-mso-endif-type': 'warn',
         },
-        {
-            name: 'mso/conditional-rules',
-            plugins: { mso: plugin },
-            files: virtualMsoFiles,
-            languageOptions: { parser: msoEslintParser },
-            rules: {
-                'mso/valid-mso-condition': 'error',
-                'mso/matching-mso-endif': 'error',
-                'mso/matching-mso-endif-type': 'warn',
-            },
+    },
+    {
+        name: 'mso/document-rules',
+        plugins: { mso: plugin },
+        files: virtualDocumentFiles,
+        languageOptions: { parser: htmlEslintParser },
+        rules: {
+            'mso/no-unknown-mso-property': 'warn',
+            'mso/vml-requires-namespace': 'warn',
+            'mso/no-unknown-vml-tag': 'warn',
+            'mso/no-unknown-vml-attribute': 'warn',
+            'mso/table-presentation-role': 'warn',
         },
-        {
-            name: 'mso/document-rules',
-            plugins: { mso: plugin },
-            files: virtualDocumentFiles,
-            languageOptions: { parser: htmlEslintParser },
-            rules: {
-                'mso/no-unknown-mso-property': 'warn',
-                'mso/vml-requires-namespace': 'warn',
-                'mso/no-unknown-vml-tag': 'warn',
-                'mso/no-unknown-vml-attribute': 'warn',
-                'mso/table-presentation-role': 'warn',
-            },
-        },
-    ],
-});
+    },
+];
 
 export default plugin;

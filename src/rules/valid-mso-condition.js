@@ -30,7 +30,7 @@ export default {
     },
 
     create(context) {
-        const fixTypos = context.options[0]?.fixTypos !== false;
+        const isFixTypos = context.options[0]?.fixTypos !== false;
 
         return {
             MsoComment(node) {
@@ -53,7 +53,7 @@ export default {
                         raw: node.raw,
                     },
                     fix:
-                        conditionFix && fixTypos && condition
+                        conditionFix && isFixTypos && condition
                             ? (fixer) => {
                                   const start = node.raw.indexOf(condition);
                                   if (start === -1) {

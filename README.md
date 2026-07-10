@@ -10,7 +10,7 @@ Extracts conditional comments into a virtual file for AST-based rules, and lints
 npm install eslint-plugin-mso-email --save-dev
 ```
 
-Requires ESLint 9+ (flat config) and Node.js 18+.
+Requires ESLint 9+ (flat config) and Node.js 22+.
 
 ## Quick Start
 
