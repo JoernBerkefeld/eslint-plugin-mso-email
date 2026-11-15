@@ -1,7 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { RuleTester } from 'eslint';
-import msoEslintParser, { visitorKeys } from '../src/mso-eslint-parser.js';
+import { ESLint, RuleTester } from 'eslint';
+import jsdoc from 'eslint-plugin-jsdoc';
+import msoEslintParser, { parseForESLint, visitorKeys } from '../src/mso-eslint-parser.js';
 import { preprocess, postprocess } from '../src/processor.js';
 import validMsoCondition from '../src/rules/valid-mso-condition.js';
 import matchingMsoEndif from '../src/rules/matching-mso-endif.js';
@@ -54,6 +55,35 @@ describe('processor — preprocess', () => {
 // ── mso-eslint-parser ────────────────────────────────────────────────────────
 
 describe('mso-eslint-parser', () => {
+    it('returns the unchanged AST and leaf visitor keys through parseForESLint', () => {
+        const text = extractMsoVirtualFile('<!--[if mso]>\n<p></p>\n<![endif]-->');
+        const options = { loc: true, range: true, tokens: true, comment: true };
+        const result = parseForESLint(text, options);
+        assert.deepEqual(result.ast, msoEslintParser.parse(text, options));
+        assert.equal(result.visitorKeys, visitorKeys);
+        assert.deepEqual(result.visitorKeys.MsoComment, []);
+        assert.equal(msoEslintParser.parseForESLint, parseForESLint);
+    });
+
+    it('supports jsdoc/check-access with the default parser on downlevel-hidden comments', async () => {
+        const eslint = new ESLint({
+            overrideConfigFile: true,
+            overrideConfig: [
+                {
+                    files: ['**/*.mso'],
+                    languageOptions: { parser: msoEslintParser },
+                    plugins: { jsdoc },
+                    rules: { 'jsdoc/check-access': 'error' },
+                },
+            ],
+        });
+        const text = extractMsoVirtualFile('<!--[if mso]>\n<p></p>\n<![endif]-->');
+        const results = await eslint.lintText(text, { filePath: 'fixture.mso' });
+        assert.equal(results.length, 1);
+        assert.equal(results[0].fatalErrorCount, 0);
+        assert.deepEqual(results[0].messages, []);
+    });
+
     it('produces a Program with MsoComment body nodes', () => {
         const text = extractMsoVirtualFile('<!--[if mso]>\n<p></p>\n<![endif]-->');
         const ast = msoEslintParser.parse(text, {});

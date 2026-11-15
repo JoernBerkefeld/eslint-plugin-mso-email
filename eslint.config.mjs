@@ -40,6 +40,7 @@ export default [
         },
         rules: {
             'logical-assignment-operators': ['error', 'always'],
+            'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
             'unicorn/no-null': 'off',
             'unicorn/prevent-abbreviations': 'off',
             'arrow-body-style': ['error', 'as-needed'],

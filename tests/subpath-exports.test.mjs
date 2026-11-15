@@ -13,11 +13,17 @@ describe('package subpath exports', () => {
         assert.equal(typeof module_.default.postprocess, 'function');
     });
 
-    it('./mso-parser exposes parse and visitorKeys', async () => {
+    it('./mso-parser exposes parse, parseForESLint and visitorKeys', async () => {
         const module_ = await import('eslint-plugin-mso-email/mso-parser');
         assert.equal(typeof module_.parse, 'function');
         assert.equal(typeof module_.visitorKeys, 'object');
         assert.equal(typeof module_.default.parse, 'function');
+        assert.equal(typeof module_.parseForESLint, 'function');
+        assert.equal(module_.default.parseForESLint, module_.parseForESLint);
+        const result = module_.parseForESLint('<!--[if mso]><![endif]-->', {});
+        assert.deepEqual(result.ast, module_.parse('<!--[if mso]><![endif]-->', {}));
+        assert.equal(result.visitorKeys, module_.visitorKeys);
+        assert.deepEqual(result.visitorKeys.MsoComment, []);
     });
 
     it('./html-parser exposes parse and visitorKeys', async () => {

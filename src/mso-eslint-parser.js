@@ -90,4 +90,15 @@ export function parse(text, _options) {
     };
 }
 
-export default { parse, visitorKeys };
+/**
+ * Parses a virtual `.mso` file and supplies ESLint with its visitor keys.
+ *
+ * @param {string} text - Text of the virtual `.mso` file.
+ * @param {{ loc?: boolean, range?: boolean, tokens?: boolean, comment?: boolean }} options - ESLint parse options.
+ * @returns {{ ast: ReturnType<typeof parse>, visitorKeys: Record<string, string[]> }} ESLint parser result.
+ */
+export function parseForESLint(text, options) {
+    return { ast: parse(text, options), visitorKeys };
+}
+
+export default { parse, parseForESLint, visitorKeys };
